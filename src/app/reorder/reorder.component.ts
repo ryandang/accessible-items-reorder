@@ -108,4 +108,57 @@ export class ReorderComponent implements AfterViewInit {
     }
   }
 
+  handleKeyUp(evt, newOrder, item) {
+    // handle enter key
+    if (evt.which === 13) {
+      this.rearrange(newOrder, item);
+    }
+
+    // handle tab key
+    if (evt.which === 9) {
+      // handle tab key when it is on first item on the list
+      if (item.order === 1) {
+        // use default event for shift tab
+        if (evt.shiftKey) {
+          return;
+        }
+
+        evt.preventDefault();
+        this.elementRef.nativeElement.querySelector('.order-box-2').focus();
+        return;
+      }
+
+      // handle shift tab key when it is on 2nd item on the list
+      if (item.order === 2) {
+        if (evt.shiftKey) {
+          evt.preventDefault();
+          this.elementRef.nativeElement.querySelector('.order-box-1').focus();
+          return;
+        }
+      }
+
+      // handle tab key when it on the second last item on the list
+      if (item.order === (this._items.length - 1)) {
+
+        // use default event for shift tab
+        if (evt.shiftKey) {
+          return;
+        }
+
+        evt.preventDefault();
+        this.elementRef.nativeElement.querySelector('.order-box-' + this._items.length).focus();
+        return;
+      }
+
+      // handle last item tab
+      if (item.order === this._items.length) {
+        // if shift tab on last item, focus second last item
+        if (evt.shiftKey) {
+          evt.preventDefault();
+          this.elementRef.nativeElement.querySelector('.order-box-' + (this._items.length - 1)).focus();
+        }
+      }
+    }
+
+  }
 }

@@ -1,19 +1,19 @@
 <h1>
   Items Re-Ordering
 </h1>
-
 <p>
-
   <label>Number of items in the list:</label>
   <input type="text" [(ngModel)]="numberOfItems" (keyup.enter)="updateItemsList()"/>
 </p>
-
 <p>
   Enter the desired order for the item in the input box and hit Enter
 </p>
 <ng-template #itemTpl let-item="item">
   <div class="test-item">{{item.name}}</div>
 </ng-template>
+
 <div class="container">
+  <div class="column-order"><h3>Order</h3></div>
+  <div class="column-items"><h3>Items</h3></div>
   <reorder [items]="testItems" [itemTpl]="itemTpl"></reorder>
 </div>

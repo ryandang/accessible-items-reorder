@@ -3,10 +3,11 @@
   *ngFor="let item of _items; let index = index"
   style.top="{{(item.order - 1)*itemHeight + 'px'}}">
     <div class="order-box-container">
-      <input type="text" class="order-box"
-      [tabindex]="(originalOrder[index].order*1)"
+      <input type="text"
+      class="order-box order-box-{{item.order}}"
+      [tabindex]="item.order === 1 || item.order === _items.length ? 0 : item.order"
       [(ngModel)]="originalOrder[index].order"
-      (keyup.enter)="rearrange(originalOrder[index], item)"/>
+      (keydown)="handleKeyUp($event, originalOrder[index], item)"/>
     </div>
 
     <div class="template-container">

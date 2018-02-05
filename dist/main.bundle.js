@@ -20,7 +20,7 @@ webpackEmptyAsyncContext.id = "../../../../../src/$$_lazy_route_resource lazy re
 /***/ "../../../../../src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<h1>\n  Items Re-Ordering\n</h1>\n\n<p>\n\n  <label>Number of items in the list:</label>\n  <input type=\"text\" [(ngModel)]=\"numberOfItems\" (keyup.enter)=\"updateItemsList()\"/>\n</p>\n\n<p>\n  Enter the desired order for the item in the input box and hit Enter\n</p>\n<ng-template #itemTpl let-item=\"item\">\n  <div class=\"test-item\">{{item.name}}</div>\n</ng-template>\n<div class=\"container\">\n  <reorder [items]=\"testItems\" [itemTpl]=\"itemTpl\"></reorder>\n</div>\n"
+module.exports = "<h1>\n  Items Re-Ordering\n</h1>\n<p>\n  <label>Number of items in the list:</label>\n  <input type=\"text\" [(ngModel)]=\"numberOfItems\" (keyup.enter)=\"updateItemsList()\"/>\n</p>\n<p>\n  Enter the desired order for the item in the input box and hit Enter\n</p>\n<ng-template #itemTpl let-item=\"item\">\n  <div class=\"test-item\">{{item.name}}</div>\n</ng-template>\n\n<div class=\"container\">\n  <div class=\"column-order\"><h3>Order</h3></div>\n  <div class=\"column-items\"><h3>Items</h3></div>\n  <reorder [items]=\"testItems\" [itemTpl]=\"itemTpl\"></reorder>\n</div>\n"
 
 /***/ }),
 
@@ -32,7 +32,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, ".container {\n  height: 320px;\n  width: 500px; }\n  .container .test-item {\n    color: white;\n    background: #1687e0;\n    padding: 10px; }\n", ""]);
+exports.push([module.i, ".container {\n  height: 320px;\n  width: 500px; }\n  .container .test-item {\n    color: white;\n    background: #1687e0;\n    padding: 10px; }\n  .container .column-order {\n    display: inline-block;\n    width: 56px; }\n  .container .column-items {\n    display: inline-block;\n    width: calc(100% - 60px);\n    text-align: center; }\n", ""]);
 
 // exports
 
@@ -137,7 +137,7 @@ var AppModule = (function () {
 /***/ "../../../../../src/app/reorder/reorder.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"reorder-items-container\">\n  <div class=\"reorder-item\"\n  *ngFor=\"let item of _items; let index = index\"\n  style.top=\"{{(item.order - 1)*itemHeight + 'px'}}\">\n    <div class=\"order-box-container\">\n      <input type=\"text\" class=\"order-box\"\n      [tabindex]=\"(originalOrder[index].order*1)\"\n      [(ngModel)]=\"originalOrder[index].order\"\n      (keyup.enter)=\"rearrange(originalOrder[index], item)\"/>\n    </div>\n\n    <div class=\"template-container\">\n      <ng-template\n        [ngTemplateOutletContext]=\"{item: item}\"\n        [ngTemplateOutlet]=\"itemTpl\">\n      </ng-template>\n    </div>\n  </div>\n</div>\n"
+module.exports = "<div class=\"reorder-items-container\">\n  <div class=\"reorder-item\"\n  *ngFor=\"let item of _items; let index = index\"\n  style.top=\"{{(item.order - 1)*itemHeight + 'px'}}\">\n    <div class=\"order-box-container\">\n      <input type=\"text\"\n      class=\"order-box order-box-{{item.order}}\"\n      [tabindex]=\"item.order === 1 || item.order === _items.length ? 0 : item.order\"\n      [(ngModel)]=\"originalOrder[index].order\"\n      (keydown)=\"handleKeyUp($event, originalOrder[index], item)\"/>\n    </div>\n\n    <div class=\"template-container\">\n      <ng-template\n        [ngTemplateOutletContext]=\"{item: item}\"\n        [ngTemplateOutlet]=\"itemTpl\">\n      </ng-template>\n    </div>\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -271,6 +271,51 @@ var ReorderComponent = (function () {
                 _this.containerRef.scrollTop = _this.containerRef.scrollTop - incremental;
                 _this.scrollUp((position - incremental), incremental);
             });
+        }
+    };
+    ReorderComponent.prototype.handleKeyUp = function (evt, newOrder, item) {
+        // handle enter key
+        if (evt.which === 13) {
+            this.rearrange(newOrder, item);
+        }
+        // handle tab key
+        if (evt.which === 9) {
+            // handle tab key when it is on first item on the list
+            if (item.order === 1) {
+                // use default event for shift tab
+                if (evt.shiftKey) {
+                    return;
+                }
+                evt.preventDefault();
+                this.elementRef.nativeElement.querySelector('.order-box-2').focus();
+                return;
+            }
+            // handle shift tab key when it is on 2nd item on the list
+            if (item.order === 2) {
+                if (evt.shiftKey) {
+                    evt.preventDefault();
+                    this.elementRef.nativeElement.querySelector('.order-box-1').focus();
+                    return;
+                }
+            }
+            // handle tab key when it on the second last item on the list
+            if (item.order === (this._items.length - 1)) {
+                // use default event for shift tab
+                if (evt.shiftKey) {
+                    return;
+                }
+                evt.preventDefault();
+                this.elementRef.nativeElement.querySelector('.order-box-' + this._items.length).focus();
+                return;
+            }
+            // handle last item tab
+            if (item.order === this._items.length) {
+                // if shift tab on last item, focus second last item
+                if (evt.shiftKey) {
+                    evt.preventDefault();
+                    this.elementRef.nativeElement.querySelector('.order-box-' + (this._items.length - 1)).focus();
+                }
+            }
         }
     };
     __decorate([

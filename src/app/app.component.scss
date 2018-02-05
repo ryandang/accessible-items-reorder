@@ -7,4 +7,15 @@
         background: #1687e0;
         padding: 10px;
     }
+
+    .column-order {
+        display: inline-block;
+        width: 56px;
+    }
+
+    .column-items {
+        display: inline-block;
+        width: calc(100% - 60px);
+        text-align: center;
+    }
 }
